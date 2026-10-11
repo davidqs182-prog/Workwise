@@ -33,6 +33,9 @@ export const sources = {
           const headers = { 'X-API-Key': 'jobboerse-jobsuche' };
           let data = await tryJson(errors, base + qs, { headers });
           if (!data && base === bases[0]) { base = bases[1]; data = await tryJson(errors, base + qs, { headers }); }
+          if (data && !data.stellenangebote?.length && errors.length < 3) {
+            errors.push(`sin resultados en ${base.split('/').slice(-2).join('/')}: claves=${Object.keys(data).join(',')} maxErgebnisse=${data.maxErgebnisse ?? '?'} muestra=${JSON.stringify(data).slice(0, 160)}`);
+          }
           for (const s of data?.stellenangebote || []) {
             const loc = [s.arbeitsort?.ort, s.arbeitsort?.region, s.arbeitsort?.land || 'Deutschland'].filter(Boolean).join(', ');
             out.push(makeJob('bundesagentur', {
