@@ -33,16 +33,21 @@ export const sources = {
           const headers = { 'X-API-Key': 'jobboerse-jobsuche' };
           let data = await tryJson(errors, base + qs, { headers });
           if (!data && base === bases[0]) { base = bases[1]; data = await tryJson(errors, base + qs, { headers }); }
-          if (data && !data.stellenangebote?.length && errors.length < 3) {
-            errors.push(`sin resultados en ${base.split('/').slice(-2).join('/')}: claves=${Object.keys(data).join(',')} maxErgebnisse=${data.maxErgebnisse ?? '?'} muestra=${JSON.stringify(data).slice(0, 160)}`);
-          }
-          for (const s of data?.stellenangebote || []) {
-            const loc = [s.arbeitsort?.ort, s.arbeitsort?.region, s.arbeitsort?.land || 'Deutschland'].filter(Boolean).join(', ');
+          // La API devuelve "ergebnisliste" (v6 real) o "stellenangebote" (documentación/v4).
+          const items = data?.ergebnisliste || data?.stellenangebote || [];
+          for (const s of items) {
+            const ort = s.arbeitsort || s.arbeitsorte?.[0] || s.stellenlokationen?.[0]?.adresse || {};
+            const refnr = s.refnr || s.referenznummer;
+            const company = s.arbeitgeber || s.firma || s.arbeitgeberName || s.arbeitgeberDarstellung;
+            if ((!company || !refnr) && errors.length < 3) errors.push(`campos de la API: ${Object.keys(s).join(',')}`);
+            const loc = [ort.ort, ort.region, ort.land || 'Deutschland'].filter(Boolean).join(', ');
+            const url = s.externeUrl || (refnr ? `https://www.arbeitsagentur.de/jobsuche/jobdetail/${refnr}` : null);
+            if (!url) continue;
             out.push(makeJob('bundesagentur', {
-              title: s.titel || s.beruf, company: s.arbeitgeber, location: loc, region: region(loc),
+              title: s.stellenangebotsTitel || s.titel || s.beruf, company, location: loc, region: region(loc),
               remote: null, type: angebotsart === 2 ? 'freelance' : 'permanent',
-              postedAt: s.aktuelleVeroeffentlichungsdatum,
-              url: s.externeUrl || `https://www.arbeitsagentur.de/jobsuche/jobdetail/${s.refnr}`,
+              postedAt: s.aktuelleVeroeffentlichungsdatum || s.datumErsteVeroeffentlichung || s.veroeffentlichungsdatum || s.modifikationsTimestamp,
+              url,
             }));
           }
           await sleep(500);
