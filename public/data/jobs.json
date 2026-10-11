@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-10-11T18:33:31.610Z",
+ "updatedAt": "2026-10-11T18:36:39.170Z",
  "jobs": [
   {
    "id": "c662f63964625b01",
@@ -20945,6 +20945,49 @@
      "status": "ok",
      "received": 0,
      "added": 0
+    },
+    "arbeitnow": {
+     "status": "ok",
+     "received": 950,
+     "added": 0
+    },
+    "himalayas": {
+     "status": "ok",
+     "received": 99,
+     "added": 0
+    },
+    "remotive": {
+     "status": "ok",
+     "received": 36,
+     "added": 0
+    },
+    "remoteok": {
+     "status": "ok",
+     "received": 99,
+     "added": 0
+    },
+    "jobicy": {
+     "status": "ok",
+     "received": 211,
+     "added": 0
+    },
+    "adzuna": {
+     "status": "skipped",
+     "reason": "sin clave"
+    },
+    "jooble": {
+     "status": "skipped",
+     "reason": "sin clave"
+    }
+   }
+  },
+  {
+   "at": "2026-10-11T18:36:39.170Z",
+   "day": "2026-10-11",
+   "sources": {
+    "bundesagentur": {
+     "status": "error",
+     "error": "sin resultados en v6/jobs: claves=ergebnisliste,maxErgebnisse,page,size,facetten maxErgebnisse=38 muestra={\"ergebnisliste\":[{\"stellenangebotsart\":\"ARBEIT\",\"stellenangebotsTitel\":\"Principal Product Designer (m/w/d)\",\"arbeitszeitSchichtNachtWochenende\":false,\"arbeitsz"
     },
     "arbeitnow": {
      "status": "ok",
