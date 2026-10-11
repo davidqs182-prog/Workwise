@@ -29,7 +29,7 @@ export const sources = {
       const queries = ['Product Designer', 'UX Designer', 'UI Designer', 'UX/UI Designer', 'Media Buyer', 'Performance Marketing'];
       for (const was of queries) {
         for (const angebotsart of [1, 2]) { // 1 = Arbeit (fijo), 2 = Selbstständigkeit (freelance)
-          const qs = `?was=${encodeURIComponent(was)}&angebotsart=${angebotsart}&arbeitszeit=ho&veroeffentlichtseit=30&size=50&page=1`;
+          const qs = `?was=${encodeURIComponent(was)}&angebotsart=${angebotsart}&veroeffentlichtseit=30&size=50&page=1`;
           const headers = { 'X-API-Key': 'jobboerse-jobsuche' };
           let data = await tryJson(errors, base + qs, { headers });
           if (!data && base === bases[0]) { base = bases[1]; data = await tryJson(errors, base + qs, { headers }); }
@@ -37,7 +37,7 @@ export const sources = {
             const loc = [s.arbeitsort?.ort, s.arbeitsort?.region, s.arbeitsort?.land || 'Deutschland'].filter(Boolean).join(', ');
             out.push(makeJob('bundesagentur', {
               title: s.titel || s.beruf, company: s.arbeitgeber, location: loc, region: region(loc),
-              remote: true, type: angebotsart === 2 ? 'freelance' : 'permanent',
+              remote: null, type: angebotsart === 2 ? 'freelance' : 'permanent',
               postedAt: s.aktuelleVeroeffentlichungsdatum,
               url: s.externeUrl || `https://www.arbeitsagentur.de/jobsuche/jobdetail/${s.refnr}`,
             }));
