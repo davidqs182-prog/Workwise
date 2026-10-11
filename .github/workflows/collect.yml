@@ -1,0 +1,46 @@
+# Recopila ofertas cada mañana, guarda el historial en el repo y publica la web en GitHub Pages.
+name: Recopilar ofertas y publicar
+
+on:
+  schedule:
+    - cron: '50 4 * * *'   # 04:50 UTC = 06:50 hora de Alemania (verano)
+  workflow_dispatch: {}     # botón "Run workflow" para lanzarlo a mano
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Recopilar
+        run: npm run collect
+        env:
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          JOOBLE_API_KEY: ${{ secrets.JOOBLE_API_KEY }}
+      - name: Guardar historial
+        run: |
+          git config user.name "planb-bot"
+          git config user.email "planb-bot@users.noreply.github.com"
+          git add public/data/jobs.json
+          git diff --cached --quiet || git commit -m "Ofertas $(date -u +%F)"
+          git push
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deploy
+        uses: actions/deploy-pages@v4
