@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-10-11T18:29:25.578Z",
+ "updatedAt": "2026-10-11T18:33:31.610Z",
  "jobs": [
   {
    "id": "c662f63964625b01",
@@ -20926,6 +20926,50 @@
      "status": "ok",
      "received": 211,
      "added": 149
+    },
+    "adzuna": {
+     "status": "skipped",
+     "reason": "sin clave"
+    },
+    "jooble": {
+     "status": "skipped",
+     "reason": "sin clave"
+    }
+   }
+  },
+  {
+   "at": "2026-10-11T18:33:31.610Z",
+   "day": "2026-10-11",
+   "sources": {
+    "bundesagentur": {
+     "status": "ok",
+     "received": 0,
+     "added": 0
+    },
+    "arbeitnow": {
+     "status": "ok",
+     "received": 950,
+     "added": 0
+    },
+    "himalayas": {
+     "status": "ok",
+     "received": 99,
+     "added": 0
+    },
+    "remotive": {
+     "status": "ok",
+     "received": 36,
+     "added": 0
+    },
+    "remoteok": {
+     "status": "ok",
+     "received": 99,
+     "added": 0
+    },
+    "jobicy": {
+     "status": "ok",
+     "received": 211,
+     "added": 0
     },
     "adzuna": {
      "status": "skipped",
