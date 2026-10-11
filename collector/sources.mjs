@@ -9,6 +9,11 @@ async function getJson(url, opts = {}) {
   return res.json();
 }
 
+// Igual que getJson pero, si falla, anota el error y devuelve null para seguir con la siguiente consulta.
+async function tryJson(errors, url, opts) {
+  try { return await getJson(url, opts); } catch (e) { errors.push(String(e.message || e)); return null; }
+}
+
 const ROLE_QUERIES = ['product designer', 'ux designer', 'ui designer', 'media buyer', 'performance marketing'];
 
 export const sources = {
@@ -17,14 +22,18 @@ export const sources = {
     label: 'Bundesagentur für Arbeit',
     needsKey: false,
     async fetch() {
-      const base = 'https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v4/jobs';
-      const out = [];
+      const bases = ['https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs',
+        'https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v4/jobs'];
+      const out = []; const errors = [];
+      let base = bases[0];
       const queries = ['Product Designer', 'UX Designer', 'UI Designer', 'UX/UI Designer', 'Media Buyer', 'Performance Marketing'];
       for (const was of queries) {
         for (const angebotsart of [1, 2]) { // 1 = Arbeit (fijo), 2 = Selbstständigkeit (freelance)
-          const url = `${base}?was=${encodeURIComponent(was)}&angebotsart=${angebotsart}&arbeitszeit=ho&veroeffentlichtseit=30&size=50&page=1`;
-          const data = await getJson(url, { headers: { 'X-API-Key': 'jobboerse-jobsuche' } });
-          for (const s of data.stellenangebote || []) {
+          const qs = `?was=${encodeURIComponent(was)}&angebotsart=${angebotsart}&arbeitszeit=ho&veroeffentlichtseit=30&size=50&page=1`;
+          const headers = { 'X-API-Key': 'jobboerse-jobsuche' };
+          let data = await tryJson(errors, base + qs, { headers });
+          if (!data && base === bases[0]) { base = bases[1]; data = await tryJson(errors, base + qs, { headers }); }
+          for (const s of data?.stellenangebote || []) {
             const loc = [s.arbeitsort?.ort, s.arbeitsort?.region, s.arbeitsort?.land || 'Deutschland'].filter(Boolean).join(', ');
             out.push(makeJob('bundesagentur', {
               title: s.titel || s.beruf, company: s.arbeitgeber, location: loc, region: region(loc),
@@ -36,7 +45,7 @@ export const sources = {
           await sleep(500);
         }
       }
-      return out;
+      return { jobs: out, errors };
     },
   },
 
@@ -65,10 +74,10 @@ export const sources = {
     label: 'Himalayas',
     needsKey: false,
     async fetch() {
-      const out = [];
+      const out = []; const errors = [];
       for (const q of ROLE_QUERIES) {
-        const data = await getJson(`https://himalayas.app/jobs/api/search?q=${encodeURIComponent(q)}&page=1`);
-        for (const j of data.jobs || []) {
+        const data = await tryJson(errors, `https://himalayas.app/jobs/api/search?q=${encodeURIComponent(q)}&page=1`);
+        for (const j of data?.jobs || []) {
           const loc = (j.locationRestrictions || []).join(', ') || 'Worldwide';
           out.push(makeJob('himalayas', {
             title: j.title, company: j.companyName, location: loc, region: region(loc), remote: true,
@@ -78,7 +87,7 @@ export const sources = {
         }
         await sleep(1500);
       }
-      return out;
+      return { jobs: out, errors };
     },
   },
 
@@ -87,15 +96,15 @@ export const sources = {
     label: 'Remotive',
     needsKey: false,
     async fetch() {
-      const out = [];
+      const out = []; const errors = [];
       const urls = [
         'https://remotive.com/api/remote-jobs?category=design',
         'https://remotive.com/api/remote-jobs?search=media%20buyer',
       ];
       for (const [i, url] of urls.entries()) {
         if (i) await sleep(35000);
-        const data = await getJson(url);
-        for (const j of data.jobs || []) {
+        const data = await tryJson(errors, url);
+        for (const j of data?.jobs || []) {
           out.push(makeJob('remotive', {
             title: j.title, company: j.company_name, location: j.candidate_required_location,
             region: region(j.candidate_required_location), remote: true,
@@ -103,7 +112,7 @@ export const sources = {
           }));
         }
       }
-      return out;
+      return { jobs: out, errors };
     },
   },
 
@@ -125,10 +134,10 @@ export const sources = {
     label: 'Jobicy',
     needsKey: false,
     async fetch() {
-      const out = [];
-      for (const qs of ['tag=designer', 'tag=ux', 'tag=media%20buyer', 'industry=marketing']) {
-        const data = await getJson(`https://jobicy.com/api/v2/remote-jobs?count=100&${qs}`);
-        for (const j of data.jobs || []) {
+      const out = []; const errors = [];
+      for (const qs of ['tag=designer', 'tag=product%20designer', 'tag=media%20buyer', 'industry=marketing']) {
+        const data = await tryJson(errors, `https://jobicy.com/api/v2/remote-jobs?count=100&${qs}`);
+        for (const j of data?.jobs || []) {
           out.push(makeJob('jobicy', {
             title: j.jobTitle, company: j.companyName, location: j.jobGeo, region: region(j.jobGeo), remote: true,
             type: jobType(j.jobType, j.jobTitle), postedAt: j.pubDate,
@@ -137,7 +146,7 @@ export const sources = {
         }
         await sleep(1500);
       }
-      return out;
+      return { jobs: out, errors };
     },
   },
 

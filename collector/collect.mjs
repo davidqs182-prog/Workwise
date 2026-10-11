@@ -39,7 +39,10 @@ async function main() {
     if (only.length && !only.includes(name)) continue;
     if (src.needsKey && !hasKey(name, cfg)) { run.sources[name] = { status: 'skipped', reason: 'sin clave' }; continue; }
     try {
-      const jobs = await src.fetch(cfg);
+      const res = await src.fetch(cfg);
+      const jobs = Array.isArray(res) ? res : res.jobs;
+      const warnings = Array.isArray(res) ? [] : res.errors || [];
+      if (!jobs.length && warnings.length) throw new Error(warnings[0]);
       let added = 0;
       for (const j of jobs) {
         if (!j.url || !j.title) continue;
@@ -48,14 +51,15 @@ async function main() {
         byId.set(j.id, { ...j, firstSeen: day, lastSeen: day });
         added++;
       }
-      run.sources[name] = { status: 'ok', received: jobs.length, added };
-      console.log(`✓ ${src.label}: ${jobs.length} recibidas, ${added} nuevas`);
+      run.sources[name] = { status: 'ok', received: jobs.length, added, ...(warnings.length && { warnings }) };
+      console.log(`✓ ${src.label}: ${jobs.length} recibidas, ${added} nuevas${warnings.length ? ` (${warnings.length} consultas fallaron)` : ''}`);
     } catch (e) {
       run.sources[name] = { status: 'error', error: String(e.message || e) };
       console.error(`✗ ${src.label}: ${e.message || e}`);
     }
   }
 
+  delete store.sample; // con datos reales ya no es una vista previa
   store.jobs = [...byId.values()].sort((a, b) => (b.firstSeen + (b.postedAt || '')).localeCompare(a.firstSeen + (a.postedAt || '')));
   store.runs = [...(store.runs || []), run].slice(-90);
   store.updatedAt = run.at;
