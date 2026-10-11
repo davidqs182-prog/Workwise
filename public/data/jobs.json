@@ -1,5 +1,4 @@
 {
- "sample": true,
  "updatedAt": "2026-10-11T18:21:05.160Z",
  "jobs": [
   {
@@ -18436,36 +18435,6 @@
   }
  ],
  "runs": [
-  {
-   "at": "2026-10-11T08:00:00.000Z",
-   "day": "2026-10-11",
-   "sample": true,
-   "sources": {
-    "arbeitnow": {
-     "status": "ok",
-     "added": 7
-    },
-    "himalayas": {
-     "status": "ok",
-     "added": 4
-    },
-    "jobicy": {
-     "status": "ok",
-     "added": 6
-    },
-    "remoteok": {
-     "status": "ok",
-     "added": 5
-    },
-    "remotive": {
-     "status": "error",
-     "error": "muestra no disponible"
-    },
-    "bundesagentur": {
-     "status": "skipped"
-    }
-   }
-  },
   {
    "at": "2026-10-11T18:21:05.160Z",
    "day": "2026-10-11",
