@@ -7,6 +7,7 @@ import { Select } from './components/ui/select';
 import { Segmented } from './components/ui/segmented';
 import { dict, LANGS, SOURCE_LABELS } from './i18n';
 import { cn, store } from './lib/utils';
+import Contacts from './Contacts';
 
 const LOCALE = { es: 'es-ES', de: 'de-DE' };
 const DEFAULTS = { q: '', type: 'all', role: 'relevant', region: 'all', period: 'all', source: 'all', favOnly: false };
@@ -26,12 +27,14 @@ export default function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [f, setF] = useState(() => ({ ...DEFAULTS, ...store.get('planb.filters', {}) }));
+  const [tab, setTab] = useState(() => store.get('planb.tab', 'jobs'));
   const [favs, setFavs] = useState(() => new Set(store.get('planb.favorites', [])));
   const t = dict[lang];
 
   useEffect(() => { loadData().then(setData).catch(() => setError(true)); }, []);
   useEffect(() => { store.set('planb.lang', lang); document.documentElement.lang = lang; }, [lang]);
   useEffect(() => { store.set('planb.filters', f); }, [f]);
+  useEffect(() => { store.set('planb.tab', tab); }, [tab]);
   useEffect(() => { store.set('planb.favorites', [...favs]); }, [favs]);
   useEffect(() => {
     // Solo se fija el tema si la persona lo eligió; si no, manda el del sistema o el del visor.
@@ -101,6 +104,14 @@ export default function App() {
         </div>
       </header>
 
+      <nav aria-label="Secciones">
+        <Segmented label="Secciones" value={tab} onChange={setTab} options={[
+          { value: 'jobs', label: t.tabJobs, count: jobs.length },
+          { value: 'contacts', label: t.tabContacts },
+        ]} />
+      </nav>
+
+      {tab === 'contacts' ? <Contacts t={t} lang={lang} /> : (<>
       {data?.sample && (
         <p className="rounded-md border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm text-foreground">{t.sample}</p>
       )}
@@ -176,8 +187,10 @@ export default function App() {
         ))}
       </main>
 
+      </>)}
+
       <footer className="mt-auto flex flex-col gap-2 border-t border-border pt-4 text-xs text-muted-foreground">
-        {lastRun && (
+        {tab === 'jobs' && lastRun && (
           <p className="flex flex-wrap gap-x-3 gap-y-1">
             <span>{t.lastRun}: <span className="tabular">{new Date(lastRun.at).toLocaleString(LOCALE[lang])}</span></span>
             {Object.entries(lastRun.sources).map(([s, r]) => (

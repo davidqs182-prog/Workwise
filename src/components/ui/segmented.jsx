@@ -12,7 +12,7 @@ export function Segmented({ value, onChange, options, label, className }) {
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'rounded-[5px] px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            'whitespace-nowrap rounded-[5px] px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             value === o.value ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
           )}
         >

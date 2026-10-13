@@ -6,6 +6,23 @@ Foco: 100% remoto, empresas de Europa o USA que contraten desde Alemania.
 
 Última actualización: 14.10.2026
 
+> Los datos viven ahora en `src/data/contacts.js` y se ven en la web, pestaña **Contactos**. Para añadir una empresa se edita ese archivo.
+
+## Consultoras de UX / Product Design (contacto directo)
+
+Nombres y correos sacados del Impressum o de la página de contacto oficial (14.10.2026).
+
+| Empresa | Ciudad | Persona | Correo | Web |
+|---|---|---|---|---|
+| Clearleft | Brighton, UK | (buscar en LinkedIn) | info@clearleft.com (piden CV o portafolio de freelancers) | https://clearleft.com/about/jobs/freelancing |
+| Ergosign GmbH | Saarbrücken | Markus Kühner, Florian Straßer (Geschäftsführer) | contact@ergosign.de | https://www.ergosign.de |
+| Centigrade GmbH | Saarbrücken | Thomas Immich (Geschäftsführer) | contact@centigrade.de | https://www.centigrade.de |
+| UID GmbH | Darmstadt | Ralph Siegert (Geschäftsführer) | info@uid.com | https://www.uid.com |
+| usability.de | Hannover | Torsten Bartel, Gesine Quint (Geschäftsführer) | no publican; formulario o 0511 360 50 70 | https://www.usability.de |
+| Edenspiekermann | Berlin | Christian Hanke (CEO) | berlin@edenspiekermann.com | https://www.edenspiekermann.com |
+| Unic Becklyn AG | Stuttgart | Florian Schwarzbeck, Marko Puclin, Christoph Hautzinger (Vorstand) | hello@becklyn.com | https://becklyn.com |
+| Clay | San Francisco, NY, Lisboa | (buscar en LinkedIn) | hey@clay.global | https://clay.global |
+
 ## Cómo usar esta lista
 
 - **Contacto directo**: nombre y correo de una persona concreta (recruiter de UX/Design). Casi nunca está publicado; se busca en LinkedIn con "UX recruiter" + nombre de la agencia. No se inventan correos: solo se anota lo que esté verificado.
